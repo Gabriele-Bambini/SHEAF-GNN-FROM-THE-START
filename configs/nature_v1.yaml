@@ -1,0 +1,34 @@
+# TSGNN-v1 Baseline (Legacy)
+seed: 42
+datasets:
+  train: "brca_wu2021"
+  holdout: "biokey"
+  zeroshot: "crc_pelka2021"
+  bulk: "metabric"
+
+data:
+  K: 10
+  n_genes: 500
+  pseudotime_method: "dpt"
+  alleles: ["WT", "R175H", "R273H", "R248W", "R248Q", "R282W", "G245S", "Y220C"]
+
+model:
+  type: "tsgnn"
+  stalk_dim: 4
+  input_dim: 1
+  esm_dim: 1280
+  conditioning_dim: 128
+  num_diffusion_steps: 3
+  use_allele_conditioning: true
+  use_orthogonal_maps: true      # Legacy QR
+  use_implicit_diffusion: true
+  predict_delta: false           # Legacy (shortcut-prone)
+  use_nodal_film: false
+  use_neural_ode: true
+  use_cayley_v2: false           # v1
+  ode_hidden_dim: 256
+  ode_solver: "rk4"
+
+training:
+  lr: 1.0e-3
+  epochs: 200

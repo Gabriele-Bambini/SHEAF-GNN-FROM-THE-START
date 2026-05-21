@@ -1,0 +1,42 @@
+# TSGNN-v2 (Cayley + EdgeWeightNet)
+seed: 42
+datasets:
+  train: "brca_wu2021"
+  holdout: "biokey"
+  zeroshot: "crc_pelka2021"
+  bulk: "metabric"
+
+data:
+  K: 10
+  n_genes: 500
+  pseudotime_method: "dpt"
+  alleles: ["WT", "R175H", "R273H", "R248W", "R248Q", "R282W", "G245S", "Y220C"]
+
+science:
+  strict_real_data: true
+
+model:
+  type: "tsgnn"
+  stalk_dim: 4
+  input_dim: 1
+  esm_dim: 1280
+  conditioning_dim: 128
+  num_diffusion_steps: 3
+  use_allele_conditioning: true
+  predict_delta: false
+  use_neural_ode: true
+  edge_weight_hidden: 128
+  ode_hidden_dim: 256
+  ode_solver: "rk4"
+
+training:
+  lr: 1.0e-3
+  epochs: 200
+
+benchmarks:
+  models: ["tsgnn", "gcn_static", "mlp", "evolvegcn", "temporal_gat", "dysat"]
+  seeds: [42, 123, 456]
+
+predictions:
+  P1_zeroshot_r_threshold: 0.35
+  P2_bulk_survival_threshold: 0.1

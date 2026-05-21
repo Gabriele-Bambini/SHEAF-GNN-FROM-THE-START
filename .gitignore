@@ -1,0 +1,91 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Testing
+.pytest_cache/
+.tox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Claude/Dev tools
+.claude/
+.agent/
+.agentsync_last_touch.json
+.graphify-context.json
+graphify-out/
+
+# Windows
+desktop.ini
+Thumbs.db
+.DS_Store
+
+# Ruff/Linting
+.ruff_cache/
+
+# Data (large files)
+data/external/
+data/raw/
+data/processed/
+*.pt
+*.pth
+*.ckpt
+
+# Results/Logs
+results/
+logs/
+checkpoints/
+*.sbatch.log
+*.sbatch.err
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Environment
+.env
+.env.local
+*.venv
+venv/
+
+# Build artifacts
+*.o
+*.a
+
+# Misc
+*.bak
+*.swp
+*.swo
+*~
+.DS_Store
+Suggerimenti/
+ultimate/
+FROM\ THE\ START/

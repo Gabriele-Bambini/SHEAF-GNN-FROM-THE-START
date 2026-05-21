@@ -1,0 +1,100 @@
+# TS-GNN Default Configuration
+# All hyperparameters in one place. No hardcoded values in code.
+
+seed: 42
+
+science:
+  strict_real_data: true
+
+# Data
+data:
+  brca_geo_accessions:
+    - "GSE176078"
+    - "GSE158508"
+  n_genes: 500            # Feature-selected gene count (N)
+  n_hvgs: 2000            # HVG selection for preprocessing
+  min_cells_per_allele: 50
+  malignant_cell_method: "scrublet"  # options: scrublet | copykat_rpy2
+  alleles:
+    - "R175H"
+    - "R273H"
+    - "R248W"
+    - "R282W"
+    - "G245S"
+    - "Y220C"
+    - "R248Q"
+    - "WT"
+
+# Temporal binning
+temporal:
+  K: 15                   # Number of pseudotime bins
+  binning_method: "adaptive"    # "quantile" or "adaptive"
+  pseudotime_method: "diffusion"  # "monocle3" or "diffusion"
+  velocity: true          # Use RNA velocity for orientation
+
+# Model architecture
+model:
+  stalk_dim: 6                   # d: sheaf stalk dimension {4, 6, 8}
+  use_gradient_checkpointing: false  # auto-enabled when stalk_dim >= 8
+  use_normalized_laplacian: false    # disabled: eigh unstable on sparse GRN
+  input_dim: 1                   # Features per node
+  esm_dim: 1280                  # ESM-2 t33 output dimension
+  conditioning_dim: 128          # ESM latent dim (used by EdgeWeightNet in v2)
+  num_diffusion_steps: 3         # Sheaf diffusion iterations per time step
+  k_hop_radius: 2                # Propagation radius for sparsity loss {1, 2, 3}
+  # v2 architecture
+  use_cayley_v2: true            # v2: Cayley maps + weighted Laplacian (no QR nullspace)
+  edge_weight_hidden: 128        # v2: EdgeWeightNet hidden width
+  use_implicit_diffusion: true   # CN solver (used inside CayleyOrthogonalSheafDiffusion)
+  use_neural_ode: true           # Continuous-time restriction map evolution
+  ode_hidden_dim: 256
+  ode_solver: "rk4"
+  predict_delta: true            # Predict ΔX (required for r_Δ⊥ acceptance criterion)
+  use_nodal_film: false          # v2: ESM through edge weights, not nodal FiLM
+
+# Training
+training:
+  optimizer: "adam"
+  lr: 1.0e-3
+  weight_decay: 0.0
+  max_epochs: 500
+  patience: 75            # Early stopping patience — curriculum allele losses activate ep 100+
+  grad_clip_norm: 1.0
+  batch_size: 1           # Full graph per step
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+  curriculum: true        # Use curriculum learning strategy
+  mixed_precision: false  # fp16 autocast produces NaN in sheaf Laplacian ops; keep fp32
+
+# Loss weights
+loss:
+  lambda_1: 0.1           # Topological preservation
+  lambda_2: 0.5           # Regulon activity (DoRothEA ULM VIPER)
+  lambda_3: 0.01          # Sparsity (allele-specific Laplacian gradient)
+  lambda_4: 0.0           # Velocity consistency (0 = disabled; activate with scVelo data)
+  tau: 0.5                # Hinge threshold for L_topo
+
+# Ablation grid
+ablation:
+  stalk_dims: [4, 6, 8]
+  k_hop_radii: [1, 2, 3]
+  temporal_bins: [5, 10, 20]
+  lambda_1_grid: [0.01, 0.1, 1.0]
+  lambda_2_grid: [0.1, 0.5, 1.0]
+  lambda_3_grid: [0.001, 0.01, 0.1]
+  n_seeds: 3
+
+# Evaluation
+evaluation:
+  zero_shot_r_threshold: 0.3
+  enrichment_p_threshold: 0.001
+  depmap_rho_threshold: 0.2
+  permutation_n: 1000
+
+# Logging
+logging:
+  use_wandb: false        # Set true when ready
+  project_name: "tsgnn"
+  log_interval: 10
+  vis_interval: 50

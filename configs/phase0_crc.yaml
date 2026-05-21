@@ -1,0 +1,27 @@
+# Phase 0: CRC Proof-of-Concept Configuration
+# Master's thesis scope: 6 months, single cancer type, 500 genes, K=10
+
+defaults:
+  - default
+
+data:
+  n_genes: 500
+  min_cells_per_allele: 100  # Relaxed for proof-of-concept
+
+temporal:
+  K: 10
+
+model:
+  stalk_dim: 4
+  num_diffusion_steps: 3
+  k_hop_radius: 2
+
+training:
+  max_epochs: 500
+  patience: 20
+
+loss:
+  lambda_1: 0.1
+  lambda_2: 0.5
+  lambda_3: 0.01
+  tau: 0.5

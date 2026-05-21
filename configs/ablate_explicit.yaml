@@ -1,0 +1,19 @@
+# TSGNN-v2 Ablation: Explicit Euler (Stability Check)
+seed: 42
+data:
+  K: 10
+  n_genes: 500
+  alleles: ["WT", "R175H", "R273H", "R248W"]
+model:
+  type: "tsgnn"
+  stalk_dim: 4
+  input_dim: 1
+  esm_dim: 1280
+  conditioning_dim: 128
+  num_diffusion_steps: 3
+  use_implicit_diffusion: false  # ABLATION
+  predict_delta: true
+  use_cayley_v2: true
+training:
+  lr: 1.0e-3
+  epochs: 50
