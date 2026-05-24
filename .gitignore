@@ -1,0 +1,56 @@
+# Data (large files)
+data/raw/
+data/processed/
+data/external/esm2_embeddings/*.pt
+data/external/string/
+data/external/regnetwork/
+data/external/targetgenereg/
+data/external/dorothea/
+data/external/encode/
+data/external/jaspar/
+data/external/depmap/
+data/external-DESKTOP-0HEPV91/
+data/processed-DESKTOP-0HEPV91/
+data/raw-DESKTOP-0HEPV91/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# IDE
+.vscode/
+.idea/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# wandb
+wandb/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Model checkpoints
+checkpoints/
+*.ckpt
+
+# Results (regenerable)
+results/
+logs/
+
+# Build artifacts
+tsgnn_sync.zip
+*.zip
+
+# Ruff cache
+.ruff_cache/
+
+# Graphify
+graphify-out/

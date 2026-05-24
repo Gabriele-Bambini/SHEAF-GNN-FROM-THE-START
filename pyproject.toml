@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tsgnn"
+version = "0.1.0"
+description = "Temporal Sheaf Graph Neural Networks for Allele-Conditioned GRN Rewiring in TP53-Mutant Cancers"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Gabriele Ravasi"}]
+
+dependencies = [
+    # Core ML — let Colab's pre-installed torch/PyG take precedence
+    "torch>=2.0",
+    "torch-geometric>=2.3",
+    # Biology
+    "scanpy>=1.9",
+    "scvelo>=0.2",
+    "anndata>=0.10",
+    "harmonypy>=0.0.9",
+    "scrublet>=0.2",
+    "decoupler>=1.4",
+    # ESM-2
+    "fair-esm>=2.0.0",
+    # Data
+    "GEOparse>=2.0",
+    "requests>=2.28",
+    "pandas>=2.0",
+    "numpy>=1.23",
+    "scipy>=1.10",
+    # Visualization
+    "matplotlib>=3.7",
+    "seaborn>=0.12",
+    "networkx>=3.0",
+    "plotly>=5.0",
+    # Config & tracking
+    "wandb>=0.16",
+    "pyyaml>=6.0",
+    # Progress
+    "tqdm>=4.65",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-cov", "ruff"]
+hparam = ["optuna>=3.5.0", "optuna-dashboard>=0.14.0"]
+all = ["pytest", "pytest-cov", "ruff", "optuna>=3.5.0", "optuna-dashboard>=0.14.0"]
+
+[project.scripts]
+tsgnn-train = "tsgnn.cli:cli_train"
+tsgnn-download = "tsgnn.cli:cli_download"
+tsgnn-evaluate = "tsgnn.cli:cli_evaluate"
+tsgnn-validate = "tsgnn.cli:cli_validate"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+markers = [
+    "slow: slow tests on real data (skip with -m 'not slow')",
+]

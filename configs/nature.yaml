@@ -1,0 +1,82 @@
+# Nature-run config — drives `scripts/run_nature.py`.
+# Smaller-than-default to fit a 6h Phase-B GPU budget; bump n_genes/epochs for the
+# final paper-grade run.
+
+seed: 42
+
+datasets:
+  train: "brca_wu2021"          # primary single-cell training set
+  holdout: "biokey"             # P1 internal validation
+  zeroshot: "crc_pelka2021"     # P1 BRCA→CRC test
+  bulk: "metabric"              # P3 bulk enrichment
+
+data:
+  K: 10
+  n_genes: 500
+  # Pseudotime binning method:
+  #   - "dpt": scanpy diffusion pseudotime (biologically grounded, recommended)
+  #   - "mean_expr": rank by mean expression (fast but adjacent bins ≈ identical on
+  #                  large homogeneous datasets → identity baselines cheat)
+  #   - "shuffled": control baseline — random order (all models should degrade)
+  pseudotime_method: "dpt"
+  alleles: ["WT", "R175H", "R273H", "R248W", "R248Q", "R282W", "G245S", "Y220C"]
+  # scPRINT GRN: set to true to replace Pearson-kNN with attention-derived GRN.
+  # Requires: pip install scprint
+  # Inference runs once per dataset, result is cached as parquet.
+  # Falls back to Pearson kNN automatically if scPRINT is unavailable.
+  use_scprint_grn: false
+  scprint_ckpt: "jkobject/scPRINT"
+
+science:
+  strict_real_data: true
+
+allele_classes:
+  n_classes: 3
+  # Biological grouping by TP53 mutation mechanism (post-mortem 2026-05-18)
+  mapping:
+    WT: 0
+    R175H: 1   # structural (fold-destabilizing)
+    Y220C: 1   # structural (fold-destabilizing)
+    R248W: 2   # dna_contact (DNA-binding deficient)
+    R248Q: 2   # dna_contact
+    R273H: 2   # dna_contact
+    R282W: 2   # dna_contact
+    G245S: 2   # dna_contact
+
+model:
+  type: "tsgnn"
+  stalk_dim: 4
+  input_dim: 1
+  esm_dim: 1280          # kept for baseline models only
+  conditioning_dim: 128  # kept for baseline models only
+  num_diffusion_steps: 3
+  # A1: orthogonal restriction maps (gauge-invariant, BRCA/CRC comparable)
+  use_orthogonal_maps: true
+  # A2: Crank-Nicolson implicit diffusion (unconditionally stable)
+  use_implicit_diffusion: true
+  # AlleleSO4: init scale for Lie algebra params (0.1 = near-identity start)
+  allele_init_scale: 0.1
+
+training:
+  lr: 1.0e-3
+  epochs: 200            # bumped 50→200: 50 was underfitting (loss still decreasing at end)
+
+# What baselines to sweep in the benchmark phase (see scripts/run_nature.py --phase bench)
+benchmarks:
+  models: ["tsgnn", "evolvegcn", "temporal_gat", "dysat", "gcn_static", "mlp"]
+  seeds: [42, 123, 456]
+
+# Phase-B falsifiable predictions (Nature plan §0)
+predictions:
+  P1_zeroshot_r_threshold: 0.35
+  P2_jaccard_threshold: 0.30
+  P3_bh_q_threshold: 0.05
+  P4_sheaf_drop_threshold: 0.10
+  P5_film_jaccard_threshold: 0.10
+
+# Allele swap pairs to test (P2)
+allele_swaps:
+  - ["R175H", "R273H"]
+  - ["R175H", "R248W"]
+  - ["R273H", "R248W"]
+  - ["WT",    "R175H"]
